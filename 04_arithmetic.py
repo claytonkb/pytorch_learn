@@ -4,6 +4,9 @@ import numpy as np
 # NOTE: torch.mm() is a less fancy version of torch.matmul() ... may be better
 # for situations where you want to know exactly what pytorch is doing behind
 # the scenes
+#
+# https://pytorch.org/docs/stable/torch.html#torch.addmm
+# This could be handy for manual implementation of NN-layer
 
 #torch.tensor([[1., -1.], [1., -1.]])
 #tensor([[ 1.0000, -1.0000],
@@ -29,9 +32,6 @@ print(c)
 d = b.mul(a)
 print("d")
 print(d)
-
-# https://pytorch.org/docs/stable/torch.html#torch.addmm
-# This could be handy for manual implementation of NN-layer
 
 e = torch.matmul(d,d.transpose(0,1)) # size = nrows^2
 #e = torch.matmul(d.transpose(0,1),d) # size = ncols^2
