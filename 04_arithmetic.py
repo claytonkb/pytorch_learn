@@ -14,7 +14,12 @@ import numpy as np
 #>>> torch.tensor(np.array([[1, 2, 3], [4, 5, 6]]))
 
 x = torch.rand(3,1)
+print("x")
+print(x)
+
 y = torch.rand(3,1).transpose(0,1)
+print("y")
+print(y)
 
 z = torch.matmul(x, y)
 print("z=x*y")
@@ -32,6 +37,9 @@ print(w.numpy())
 print("z^T")
 print(z.transpose(0,1).numpy())
 
+w = torch.matmul(z, x)
+print("w=z*x")
+print(w.numpy())
 
 a = torch.tensor([[1, 2, 3], [4, 5, 6]], dtype=torch.float64)
 print("a")
