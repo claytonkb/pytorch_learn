@@ -7,5 +7,14 @@ import numpy as np
 
 print("gradients")
 
+# FF layer eqns:
+#   a_l = act(z_l)
+#   act() def= sigma()
+#   z_l = (W_l * a_l-1) + b_l
+#   
+# BP layer eqns:
+#   delta_l = grad_l (*) pd_act(z_l)
+#   grad_l-1 = W_l^T * delta_l
+
 
 
