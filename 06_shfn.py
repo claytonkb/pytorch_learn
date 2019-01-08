@@ -6,7 +6,14 @@ import numpy as np
 #http://neuralnetworksanddeeplearning.com/chap2.html
 #https://github.com/claytonkb/nielsen_visuals
 
+#data-loading:
+#https://docs.scipy.org/doc/numpy/reference/generated/numpy.loadtxt.html
+#https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#
+
 print("shfn")
+
+xy = np.loadtxt('diabetes.csv', delimiter=',', dtype=np.float32)
+print(xy)
 
 # FF layer eqns:
 #   a_l = act(z_l)
