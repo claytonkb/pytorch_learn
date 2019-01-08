@@ -138,7 +138,7 @@ is called the Hadamard product of two matrices:
     [ 3  4  ] * [ 9  10 ] = [ 27 40 ]
     [ 5  6  ]   [ 11 12 ]   [ 55 72 ]
 
-This matrix operations is commonly used in neural-nets implementations and
+This matrix operation is commonly used in neural-nets implementations and
 sometimes confusingly referred to as "matrix multiplication", even though it is
 completely different than standard matrix multiplication (see above).
 

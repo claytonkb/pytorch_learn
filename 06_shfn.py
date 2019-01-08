@@ -12,7 +12,8 @@ import numpy as np
 
 print("shfn")
 
-xy = np.loadtxt('diabetes.csv', delimiter=',', dtype=np.float32)
+#xy = np.loadtxt('diabetes.csv', delimiter=',', dtype=np.float32)
+xy = np.loadtxt('semeion.data', delimiter=',', dtype=np.float32)
 print(xy)
 
 # FF layer eqns:
