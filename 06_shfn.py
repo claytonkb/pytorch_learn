@@ -14,19 +14,39 @@ import math
 #xy = np.loadtxt('diabetes.csv', delimiter=',', dtype=np.float32)
 raw_data = np.loadtxt('semeion.data', delimiter=',', dtype=np.float32)
 
-train_x = torch.from_numpy(raw_data[0:1195, 0:-10])
-train_y = torch.from_numpy(raw_data[0:1195, -10:])
+temp_train_x = torch.from_numpy(raw_data[0:1195, 0:-10])
+temp_train_y = torch.from_numpy(raw_data[0:1195, -10:])
 
-test_x = torch.from_numpy(raw_data[1195:, 0:-10])
-test_y = torch.from_numpy(raw_data[1195:, -10:])
+temp_test_x = torch.from_numpy(raw_data[1195:, 0:-10])
+temp_test_y = torch.from_numpy(raw_data[1195:, -10:])
+
+train_x = [torch.Tensor() for _ in range(1195)]
+train_y = [torch.Tensor() for _ in range(1195)]
+
+test_x = [torch.Tensor() for _ in range(1195)]
+test_y = [torch.Tensor() for _ in range(1195)]
+
+for i in range(0,1195):
+    train_x[i] = torch.Tensor(256,1)
+    train_y[i] = torch.Tensor(10,1)
+    train_x[i] = temp_train_x[i].reshape(256,1)
+    train_y[i] = temp_train_y[i].reshape(10,1)
+
+for i in range(0,397):
+    test_x[i] = torch.Tensor(256,1)
+    test_y[i] = torch.Tensor(10,1)
+    test_x[i] = temp_test_x[i].reshape(256,1)
+    test_y[i] = temp_test_y[i].reshape(10,1)
+
+#temp = test_y[0].clone()
+#print(temp.resize_(10,1))
+#exit()
 
 train_indices = np.arange(0,1195)
 test_indices  = np.arange(0,397)
 
 np.random.shuffle(train_indices)
 np.random.shuffle(test_indices)
-
-print(test_indices[:10])
 
 # FF layer eqns:
 #   a_l = act(z_l)
@@ -38,7 +58,10 @@ print(test_indices[:10])
 #   grad_l-1 = W_l^T * delta_l
 
 def sigmoid(x):
-    return 1 / (1 + math.exp(-x))
+    try:
+        return 1 / (1 + math.exp(-x))
+    except OverflowError:
+        return 0.5
 
 def pd_sigmoid(x):
     return (x * (1 - x))
@@ -72,13 +95,14 @@ class nn_layer:
         self.d = torch.zeros(output_size,1)
         self.g = torch.zeros(input_size,1)
 
-        self.W.apply_(logit)
-        self.b.apply_(logit)
+        #self.W.apply_(logit)
+        #self.b.apply_(logit)
 
     def fwd_propagate(self, inputs):
         self.x = inputs.clone()
         self.z = torch.matmul(self.W, self.x) + self.b
         self.a = self.z.clone()
+        #print(self.a.transpose(0,1))
         self.a.apply_(sigmoid)
 
     def bwd_propagate(self, grad):
@@ -119,7 +143,8 @@ class shfn:
 
     def train(self, inputs, outputs):
         self.fwd_propagate(inputs)
-        self.loss_grad = (outputs - self.output.a) # gradient of MSE loss
+        self.loss_grad = (self.output.a - outputs) # gradient of MSE loss
+        print(self.loss_grad.transpose(0,1))
         self.bwd_propagate()
 
     def fwd_propagate(self, inputs):
@@ -130,13 +155,34 @@ class shfn:
         self.output.bwd_propagate(self.loss_grad)
         self.hidden.bwd_propagate(self.output.g)
 
-my_shfn = shfn(7,5,3)
-fake_inputs  = torch.rand(7,1)
-fake_outputs = torch.rand(3,1)
+#my_shfn = shfn(7,5,3)
+#fake_inputs  = torch.rand(7,1)
+#fake_outputs = torch.rand(3,1)
+#
+#print(my_shfn.hidden.W)
+#my_shfn.train(fake_inputs, fake_outputs) 
+#print(my_shfn.hidden.W)
 
-print(my_shfn.hidden.W)
-my_shfn.train(fake_inputs, fake_outputs) 
-print(my_shfn.hidden.W)
+my_shfn = shfn(256,32,10)
+#print(train_x[0])
+
+#print(my_shfn.hidden.W)
+
+# XXX weight matrix explodes on 4th iteration :(
+for i in range(0,10):
+    my_shfn.train(train_x[i], train_y[i]) 
+
+#print(my_shfn.hidden.W)
+
+#print(my_shfn.output.a)
+#my_shfn.fwd_propagate(train_x[0])
+#temp = train_x[0].reshape(256,1)
+#print(temp)
+#print(temp.transpose(0,1))
+#print(train_x[0])
+#print(my_shfn.output.a)
+#print(my_shfn.hidden.a)
+
 
 # MAIN:
 # open data-file
