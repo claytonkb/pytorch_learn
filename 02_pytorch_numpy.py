@@ -3,7 +3,7 @@ import numpy as np
 
 # https://docs.scipy.org/doc/numpy/reference/
 
-# torch.[ones|rand|zeroes](rows,cols)
+# torch.[ones|rand|zeros](rows,cols)
 
 #    tensor([2., 2., 2., 2., 2.], dtype=torch.float64)
 # XXX Use a.fill_(3.5) for this...
