@@ -14,7 +14,15 @@ print("shfn")
 
 #xy = np.loadtxt('diabetes.csv', delimiter=',', dtype=np.float32)
 xy = np.loadtxt('semeion.data', delimiter=',', dtype=np.float32)
-print(xy)
+
+train_x = torch.from_numpy(xy[0:1195, 0:-1])
+train_y = torch.from_numpy(xy[0:1195, [-1]])
+
+test_x = torch.from_numpy(xy[1195:, 0:-1])
+test_y = torch.from_numpy(xy[1195:, [-1]])
+
+print(train_y.size())
+print( test_y.size())
 
 # FF layer eqns:
 #   a_l = act(z_l)
