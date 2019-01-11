@@ -124,12 +124,10 @@ def main(argv):
     temp_train_x = torch.from_numpy(raw_data[0:train_rows, 0:-y_width])
     temp_train_y = torch.from_numpy(raw_data[0:train_rows, -y_width:])
 
-    train_x = [torch.Tensor() for _ in range(train_rows)]
-    train_y = [torch.Tensor() for _ in range(train_rows)]
+    train_x = [torch.Tensor(x_width,1) for _ in range(train_rows)]
+    train_y = [torch.Tensor(y_width,1) for _ in range(train_rows)]
 
     for i in range(0,train_rows):
-        train_x[i] = torch.Tensor(x_width,1)
-        train_y[i] = torch.Tensor(y_width,1)
         train_x[i] = temp_train_x[i].reshape(x_width,1)
         train_y[i] = temp_train_y[i].reshape(y_width,1)
 
@@ -137,20 +135,14 @@ def main(argv):
     temp_test_x = torch.from_numpy(raw_data[train_rows:, 0:-y_width])
     temp_test_y = torch.from_numpy(raw_data[train_rows:, -y_width:])
 
-    test_x = [torch.Tensor() for _ in range(test_rows)]
-    test_y = [torch.Tensor() for _ in range(test_rows)]
+    test_x = [torch.Tensor(x_width,1) for _ in range(test_rows)]
+    test_y = [torch.Tensor(y_width,1) for _ in range(test_rows)]
 
     for i in range(0,test_rows):
-        test_x[i] = torch.Tensor(x_width,1)
-        test_y[i] = torch.Tensor(y_width,1)
         test_x[i] = temp_test_x[i].reshape(x_width,1)
         test_y[i] = temp_test_y[i].reshape(y_width,1)
 
     my_shfn = shfn(x_width, num_hidden, y_width)
-
-    #smoke-test the weight matrix:
-    #tempW = my_shfn.hidden.W.clone()
-    #tempW = my_shfn.output.W.clone()
 
     train_indices = np.arange(0, train_rows)
 
@@ -159,9 +151,6 @@ def main(argv):
         np.random.shuffle(train_indices) # Note: no mini-batching since our training set is small anyway
         for i in range(0,train_rows):
             my_shfn.train(train_x[train_indices[i]], train_y[train_indices[i]]) 
-
-    #print(my_shfn.hidden.W == tempW)
-    #print(my_shfn.output.W == tempW)
 
     test_error = torch.Tensor()
     num_failures = 0
