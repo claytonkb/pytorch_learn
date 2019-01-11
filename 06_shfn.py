@@ -35,6 +35,14 @@ for i in range(0,397):
     test_x[i] = temp_test_x[i].reshape(256,1)
     test_y[i] = temp_test_y[i].reshape(10,1)
 
+#for i in range(0,1195):
+#    train_x[i] += 0.1
+#    train_x[i] *= 0.9
+#
+#for i in range(0,1195):
+#    train_y[i] += 0.1
+#    train_y[i] *= 0.9
+
 # FF layer eqns:
 #   a_l = act(z_l)
 #   act() def= sigma()
@@ -54,12 +62,9 @@ def pd_sigmoid(x):
     u = math.exp(x)
     return u / ((1 + u) ** 2)
 
-def logit(x):
-    return math.log(x / (1 - x))
-
 class nn_layer:
 
-    eta = 0.1
+    eta = 0.2
 
     def __init__(self, input_size, output_size):
         self.n = input_size
@@ -72,8 +77,8 @@ class nn_layer:
         self.d = torch.zeros(output_size,1)
         self.g = torch.zeros(input_size,1)
 
-        self.W.apply_(logit)
-        self.b.apply_(logit)
+        self.W.sub_(0.5)
+        self.b.sub_(0.5)
 
     def fwd_propagate(self, inputs):
         self.x = inputs.clone()
@@ -120,9 +125,21 @@ train_indices = np.arange(0,1195)
 
 my_shfn = shfn(256,32,10)
 
+#my_shfn.fwd_propagate(train_x[0])
+#loss_grad = (my_shfn.output.a - train_y[0])
+#
+#print(train_y[0].transpose(0,1))
+#print(my_shfn.output.a.transpose(0,1))
+#print(loss_grad.transpose(0,1))
+#
+##print(my_shfn.output.W)
+#
+#exit()
+
 #tempW = my_shfn.hidden.W.clone()
 #tempW = my_shfn.output.W.clone()
 
+#for j in range(0,1195):
 for j in range(0,10):
     print("epoch: ", j, "\n")
     np.random.shuffle(train_indices)
@@ -132,9 +149,16 @@ for j in range(0,10):
 #print(my_shfn.hidden.W == tempW)
 #print(my_shfn.output.W == tempW)
 
-for i in range(0,397):
+#for i in range(0,397):
+for i in range(0,40):
     my_shfn.fwd_propagate(test_x[i])
     print((my_shfn.output.a - test_y[i]).transpose(0,1))
+
+# To calculate test error:
+#   Apply 50% threshold fn: c=(my_shfn.output.a - test_y[i]) --> {0,1}
+#   If every element of c=0, this test vector PASSED
+#       Otherwise, it FAILED
+#   test_error = #FAILED / 397
 
 # prompt-loop:
 #   input test sample # from user
