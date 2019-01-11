@@ -158,10 +158,11 @@ def main(argv):
     for i in range(0, num_tests):
         my_shfn.fwd_propagate(test_x[i])
         test_error = (my_shfn.output.a - test_y[i])
-        print(test_error)
-        num_failures += test_error.apply_(thresh).sum(0)
+        
+        if(test_error.apply_(thresh).sum(0) != 0):
+            num_failures += 1
 
-    print(num_failures.item() / num_tests)
+    print(num_failures / num_tests)
 
 if __name__ == "__main__":
     main(sys.argv)
