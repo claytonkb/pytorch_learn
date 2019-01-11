@@ -1,4 +1,5 @@
 # 06_shfn.py
+#   tested with python3
 
 import torch
 import numpy as np
@@ -98,47 +99,65 @@ class shfn:
 # Main function
 def main(argv):
 
+    #https://www.tutorialspoint.com/python/python_command_line_arguments.htm
+    # CLI parameters:
+    #   num_hidden
+    #   eta
+    #   num_epochs
+    #   num_tests
+
+    # These dimensions are specific to the Semeion dataset
+    x_width = 256
+    y_width = 10
+    train_rows = 1195
+    test_rows  = 397
+
+    num_epochs = 20
+    num_tests = test_rows
+    num_hidden = 32
+
     raw_data = np.loadtxt('semeion.data', delimiter=',', dtype=np.float32)
 
     # data-wrangling...
 
-    temp_train_x = torch.from_numpy(raw_data[0:1195, 0:-10])
-    temp_train_y = torch.from_numpy(raw_data[0:1195, -10:])
+    # training set
+    temp_train_x = torch.from_numpy(raw_data[0:train_rows, 0:-y_width])
+    temp_train_y = torch.from_numpy(raw_data[0:train_rows, -y_width:])
 
-    train_x = [torch.Tensor() for _ in range(1195)]
-    train_y = [torch.Tensor() for _ in range(1195)]
+    train_x = [torch.Tensor() for _ in range(train_rows)]
+    train_y = [torch.Tensor() for _ in range(train_rows)]
 
-    for i in range(0,1195):
-        train_x[i] = torch.Tensor(256,1)
-        train_y[i] = torch.Tensor(10,1)
-        train_x[i] = temp_train_x[i].reshape(256,1)
-        train_y[i] = temp_train_y[i].reshape(10,1)
+    for i in range(0,train_rows):
+        train_x[i] = torch.Tensor(x_width,1)
+        train_y[i] = torch.Tensor(y_width,1)
+        train_x[i] = temp_train_x[i].reshape(x_width,1)
+        train_y[i] = temp_train_y[i].reshape(y_width,1)
 
-    temp_test_x = torch.from_numpy(raw_data[1195:, 0:-10])
-    temp_test_y = torch.from_numpy(raw_data[1195:, -10:])
+    # test set
+    temp_test_x = torch.from_numpy(raw_data[train_rows:, 0:-y_width])
+    temp_test_y = torch.from_numpy(raw_data[train_rows:, -y_width:])
 
-    test_x = [torch.Tensor() for _ in range(397)]
-    test_y = [torch.Tensor() for _ in range(397)]
+    test_x = [torch.Tensor() for _ in range(test_rows)]
+    test_y = [torch.Tensor() for _ in range(test_rows)]
 
-    for i in range(0,397):
-        test_x[i] = torch.Tensor(256,1)
-        test_y[i] = torch.Tensor(10,1)
-        test_x[i] = temp_test_x[i].reshape(256,1)
-        test_y[i] = temp_test_y[i].reshape(10,1)
+    for i in range(0,test_rows):
+        test_x[i] = torch.Tensor(x_width,1)
+        test_y[i] = torch.Tensor(y_width,1)
+        test_x[i] = temp_test_x[i].reshape(x_width,1)
+        test_y[i] = temp_test_y[i].reshape(y_width,1)
 
-    my_shfn = shfn(256, 32, 10)
+    my_shfn = shfn(x_width, num_hidden, y_width)
 
     #smoke-test the weight matrix:
     #tempW = my_shfn.hidden.W.clone()
     #tempW = my_shfn.output.W.clone()
 
-    train_indices = np.arange(0, 1195)
-    num_epochs = 5
+    train_indices = np.arange(0, train_rows)
 
     for j in range(0, num_epochs):
         print("epoch: ", j, "\n")
-        np.random.shuffle(train_indices)
-        for i in range(0,1195):
+        np.random.shuffle(train_indices) # Note: no mini-batching since our training set is small anyway
+        for i in range(0,train_rows):
             my_shfn.train(train_x[train_indices[i]], train_y[train_indices[i]]) 
 
     #print(my_shfn.hidden.W == tempW)
@@ -146,7 +165,6 @@ def main(argv):
 
     test_error = torch.Tensor()
     num_failures = 0
-    num_tests = 397
 
     for i in range(0, num_tests):
         my_shfn.fwd_propagate(test_x[i])
