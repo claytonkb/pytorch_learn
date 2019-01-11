@@ -148,7 +148,7 @@ def main(argv):
 
     for j in range(0, num_epochs):
         print("epoch: ", j, "\n")
-        np.random.shuffle(train_indices) # Note: no mini-batching since our training set is small anyway
+        np.random.shuffle(train_indices) # Note: no mini-batching
         for i in range(0,train_rows):
             my_shfn.train(train_x[train_indices[i]], train_y[train_indices[i]]) 
 
@@ -158,6 +158,7 @@ def main(argv):
     for i in range(0, num_tests):
         my_shfn.fwd_propagate(test_x[i])
         test_error = (my_shfn.output.a - test_y[i])
+        print(test_error)
         num_failures += test_error.apply_(thresh).sum(0)
 
     print(num_failures.item() / num_tests)
